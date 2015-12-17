@@ -9,6 +9,7 @@
 #include "button_rocker.h"
 #include "math.h"
 
+
 /*
 PC0---ADC1_IN10-DMA2S0C0
 PC1---ADC1_IN11-DMA2S0C0
@@ -18,8 +19,7 @@ PC4---Button1
 PC5---Button2
 */
 
-void Rocker_Init(void)  //摇杆初始化
-{
+void Rocker_Init(void){  //摇杆初始化
 
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE); 
     GPIO_InitTypeDef GPIO_InitStructure;
@@ -40,24 +40,7 @@ void Rocker_Init(void)  //摇杆初始化
 	  EXTI_InitTypeDef EXTI_InitStructure;
 	  NVIC_InitTypeDef NVIC_InitStructure;
 
-  	  /* DMA2 Stream0 channel0 configuration **************************************/
-  	DMA_InitStructure.DMA_Channel = DMA_Channel_0;  
-	  DMA_InitStructure.DMA_PeripheralBaseAddr = &ADC1->DR;
-	  DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)&ADC_value;
-	  DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;
-	  DMA_InitStructure.DMA_BufferSize = 128;    //4*32
-	  DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
-	  DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;   
-	  DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;  //DR is a half-word register
-	  DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
-	  DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;
-	  DMA_InitStructure.DMA_Priority = DMA_Priority_High;
-	  DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable;         
-	  DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_HalfFull;
-	  DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;
-	  DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
-	  DMA_Init(DMA2_Stream0, &DMA_InitStructure);
-	  DMA_Cmd(DMA2_Stream0, ENABLE);
+ 
 
 	  /* ADC Common Init **********************************************************/
 	  ADC_CommonInitStructure.ADC_Mode = ADC_Mode_Independent;
@@ -95,33 +78,37 @@ void Rocker_Init(void)  //摇杆初始化
 
 	  //校准中间值
 	  Delay(0xFFFF);
-	  for (uint8_t i=0;i<4;++i)
+	  uint8_t i;
+	  for (i=0;i<4;++i)
 	  {
 		  ADC_middle+=ADC_value_filter[i];
 	  }
-	  ADC_middle>>=2;    //取中间值
+	   ADC_middle>>=2;    //取中间值
 }
 
-// void DMA2_Stream0_IRQHandler(void)    //DMA中断滤波
-// {
-//  	 if(DMA_GetITStatus(DMA2_IT_TC1) != RESET) 
-//    	 {  
-// 		ADC_SoftwareStartConvCmd(ADC1, DISABLE);			
-// 		uint32_t sum= 0; int count,i; 
-// 		for(i=0;i<4;i++) 
-// 		{
-// 			for (count=0;count<32;count++) 
-// 			{
-// 				sum += ADC_value[count][i]; 
-// 			}
-// 		ADC_value_filter[i]=sum>>5; 
-// 		sum=0;
-// 		}	
-// 	 }
-// 	 DMA_ClearITPendingBit(DMA2_IT_TC1);
-// }
 
-void ABS(int x)
+
+void DMA2_Stream0_IRQHandler(void)    //DMA中断滤波
+{
+ 	 if(DMA_GetITStatus(DMA2_Stream0,DMA_IT_TC) != RESET) 
+   	 {  
+		ADC_EOCOnEachRegularChannelCmd(ADC1, DISABLE);			
+		uint32_t sum= 0; 
+		int count,i; 
+		for(i=0;i<4;i++) 
+		{
+			for (count=0;count<32;count++) 
+			{
+				sum += ADC_value[count][i]; 
+			}
+		ADC_value_filter[i]=sum>>5; 
+		sum=0;
+		}	
+	 }
+	 DMA_ClearITPendingBit(DMA2_Stream0,DMA_IT_TC);
+}
+
+int ABS(int x)
 {
 	if (x>0)
 		return x;
@@ -130,55 +117,55 @@ void ABS(int x)
 }
 
 
-// void Rocker_Cmd(CMD &cmd); //读取指令存入指令空间  TODO:滤波
-// {
-// 	if(filter_flag==1)
-// 	{
-// 		filter_flag=0;   //已完成一次采样
-// 		x1=ABS(ADC_value_filter[0]-ADC_middle);  //max=2048
-// 		y1=ABS(ADC_value_filter[1]-ADC_middle);  
-// 		x2=ABS(ADC_value_filter[2]-ADC_middle);
-// 		y2=ABS(ADC_value_filter[3]-ADC_middle);
-// 		//滤除小扰动
-// 		if(x1>50&&y1[1]>50) 
-// 		{
-// 			cmd->mode=0;   //切换为手动模式
-// 			cmd->insert=0;  //强制抬刀
-// 			cmd->DCSpeed=0;  //强制停转电机、
+void Rocker_Cmd(CMD *cmd) //读取指令存入指令空间  TODO:滤波
+{
+	if(filter_Flag==1)
+	{
+		filter_Flag=0;   //已完成一次采样
+		float x1=ABS(ADC_value_filter[0]-ADC_middle);  //max=2048
+		float y1=ABS(ADC_value_filter[1]-ADC_middle);  
+		float x2=ABS(ADC_value_filter[2]-ADC_middle);
+		float y2=ABS(ADC_value_filter[3]-ADC_middle);
+		//滤除小扰动
+		if(x1>50&&y1>50) 
+		{
+			cmd->mode=0;   //切换为手动模式
+			cmd->insert=0;  //强制抬刀
+			cmd->DCSpeed=0;  //强制停转电机、
 
-// 			//TODO:清除size和route
-// 			cmd->speed=sqrt(x1*x1+y1*y1)/29;    
-// 			if(x1>0)
-// 				cmd->angle=atan((float)y1/x1);
-// 			else if(x1<0)
-// 				cmd->angle=atan((float)y1/x1)+PI;
-// 			else if(y1>0)
-// 				cmd->angle=PI/2;
-// 			else if(y1<0)
-// 				cmd->angle=3*PI/2;
-// 			else
-// 				cmd->angle=0;
-// 		}
-// 	}
-// 	//TODO:sizeinput的Rocker部分
+			//TODO:清除size和route
+			cmd->speed=sqrt(x1*x1+y1*y1)/29;    
+			if(x1>0)
+				cmd->angle=atan((float)y1/x1);
+			else if(x1<0)
+				cmd->angle=atan((float)y1/x1)+PI;
+			else if(y1>0)
+				cmd->angle=PI/2;
+			else if(y1<0)
+				cmd->angle=3*PI/2;
+			else
+				cmd->angle=0;
+		}
+	}
+	//TODO:sizeinput的Rocker部分
 
-// 	//以下为点动控制drill起降的部分
-// 	if(GPIO_ReadInputDataBit(GPIOC , GPIO_Pin_4))
-// 	{
-// 		Stepper_Speed(stepper3 , 30);
-// 		Delay(0xFF);  //需要调节点动操作时电机运动的时间
-// 		Stepper_Speed(stepper3 , 0);
-// 	}
-// 	if(GPIO_ReadInputDataBit(GPIOC , GPIO_Pin_5))
-// 	{
-// 		Stepper_Speed(stepper3 , -30);
-// 		Delay(0xFF);
-// 		Stepper_Speed(stepper3 , 0);
-// 	}
-// }
+	//以下为点动控制drill起降的部分
+	if(GPIO_ReadInputDataBit(GPIOC , GPIO_Pin_4))
+	{
+		Stepper_Speed(stepper3 , 30);
+		Delay(0xFF);  //需要调节点动操作时电机运动的时间
+		Stepper_Speed(stepper3 , 0);
+	}
+	if(GPIO_ReadInputDataBit(GPIOC , GPIO_Pin_5))
+	{
+		Stepper_Speed(stepper3 , -30);
+		Delay(0xFF);
+		Stepper_Speed(stepper3 , 0);
+	}
+}
 
-// void Exec_Cmd(CMD &cmd);    //执行命令，底层调用cuttermove的函数
-// {
+void Exec_Cmd(CMD *cmd)    //执行命令，底层调用cuttermove的函数
+{
 
-// }
+}
 

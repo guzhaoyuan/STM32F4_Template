@@ -9,6 +9,7 @@
 #include "motor.h"
 #include "math.h"
 
+
 extern uint8_t Cutter_Init_Flag;
 extern uint8_t Cutter_Control_Flag;
 

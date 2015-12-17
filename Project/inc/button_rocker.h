@@ -23,7 +23,7 @@ void Exec_Cmd(CMD *cmd);    //执行命令，底层调用cuttermove的函数
 
  uint16_t ADC_value[32][4];
  uint16_t ADC_value_filter[4];
- //uint8_t filter_flag=0;    //0---filt NO 1---filt OK
+ uint8_t filter_Flag;    //0---filt NO 1---filt OK
  uint8_t ADC_middle;       //摇杆的静态值
 
 #endif 

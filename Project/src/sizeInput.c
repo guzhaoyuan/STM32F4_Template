@@ -1,7 +1,12 @@
 #include "sizeInput.h"
 
-void Input_Init(void){}
-void Input_Display(SIZE *size){}   //TODO:显示当前路径的步骤数
+void Input_Init(void){
+	
+}
+
+void Input_Display(SIZE *size){//TODO:显示当前路径的步骤数
+
+}   
 void Calculate_Route(SIZE *size){
 	int baseX = 10;
 	int baseY = 10;
