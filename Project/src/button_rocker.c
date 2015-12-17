@@ -132,14 +132,14 @@ void Rocker_Cmd(CMD *cmd) //读取指令存入指令空间  TODO:滤波
 		{
 			cmd->mode=0;   //切换为手动模式
 			cmd->insert=0;  //强制抬刀
-			cmd->DCSpeed=0;  //强制停转电机、
+			cmd->DCSpeed=0;  //强制停转电机
 
 			//TODO:清除size和route
 			cmd->speed=sqrt(x1*x1+y1*y1)/29;    
 			if(x1>0)
-				cmd->angle=atan((float)y1/x1);
+				cmd->angle=atan((float)y1/(float)x1);
 			else if(x1<0)
-				cmd->angle=atan((float)y1/x1)+PI;
+				cmd->angle=atan((float)y1/(float)x1)+PI;
 			else if(y1>0)
 				cmd->angle=PI/2;
 			else if(y1<0)
@@ -167,6 +167,11 @@ void Rocker_Cmd(CMD *cmd) //读取指令存入指令空间  TODO:滤波
 
 void Exec_Cmd(CMD *cmd)    //执行命令，底层调用cuttermove的函数
 {
-
+	Cutter_Move_Drill(cmd->insert);
+	if(cmd->mode==0){
+		Cutter_Move_Manually(cmd->speed,cmd->angle,cmd->DCSpeed);
+	}else{
+		Cutter_Move_Automatically(cmd);
+	}
 }
 

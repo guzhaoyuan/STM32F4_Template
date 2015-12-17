@@ -7,30 +7,39 @@ uint8_t Cutter_Init_Flag=0;  //判断是否回零点
 uint8_t Cutter_Control_Flag=0;   //0---Manuallly 1---Automatically
 
 int main(){
-	//CMD *cmd=(*CMD)malloc(sizeof(CMD)); 
-	//LOCATION *selflocation=(*LOCATION)malloc(sizeof(LOACTION)); 
-	//SIZE *size=(*SIZE)malloc(sizeof(SIZE));
+	CMD *cmd = malloc(sizeof(CMD)); 
+	NODE *selflocation = malloc(sizeof(NODE)); 
+	SIZE *size = malloc(sizeof(SIZE));
 	Motor_Init();
 	Rocker_Init();
 	Input_Init();
 	Cutter_Init();   //回零点
+	cmd->x_target=1;
+	cmd->y_target=1;
+	cmd->x_current=0;
+	cmd->y_current=0;
+	cmd->mode = 1;
+	cmd->speed = 60;
+	cmd->angle = 0;
 	while (1)
-	{   
+	{  
+		//Exec_Cmd(cmd);
+		 // Stepper_Speed(stepper1 , -60);
+		 // Stepper_Speed(stepper2 , -60);
+		// Stepper_Speed(stepper2 , 0);
+		// Delay(0x1FFFFFF);
 
-
+		// Stepper_Speed(stepper2 , 60);
+		// Stepper_Speed(stepper1 , 0);
+		// Delay(0x1FFFFFF);
 		
-		// Stepper_Speed(stepper2 , 60);
+		// Stepper_Speed(stepper2 , 0);
 		// Stepper_Speed(stepper1 , -60);
-		// Delay(0xFFFFFF);
-		// Stepper_Speed(stepper2 , 60);
-		// Stepper_Speed(stepper1 , 60);
-		// Delay(0xFFFFFF);
+		// Delay(0x1FFFFFF);
+
 		// Stepper_Speed(stepper2 , -60);
-		// Stepper_Speed(stepper1 , 60);
-		// Delay(0xFFFFFF);
-		// Stepper_Speed(stepper2 , -60);
-		// Stepper_Speed(stepper1 , -60);
-		// Delay(0xFFFFFF);
+		// Stepper_Speed(stepper1 , 0);
+		// Delay(0x1FFFFFF);
   		//DCMotor_Speed(50);
   		//Stepper_Speed(stepper1 , -50);
   		//Stepper_Speed(stepper2 , 50);

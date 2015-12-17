@@ -235,6 +235,7 @@ void Stepper_Speed(STEPPER stepperx , float speed)    //控制单个电机旋转
 			else
 			{
 				GPIO_ResetBits(GPIOA,GPIO_Pin_0);
+				
 			}
 			TIM2->ARR=(101-speed)*100;   
 			TIM2->CCR1=(TIM2->ARR)>>1; 
