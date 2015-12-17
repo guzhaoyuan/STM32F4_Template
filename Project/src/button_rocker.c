@@ -54,7 +54,7 @@ void Rocker_Init(void){  //摇杆初始化
 	  ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
 	  ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;
 	  ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
-	  ADC_InitStructure.ADC_NbrOfConversion = 1;
+	  ADC_InitStructure.ADC_NbrOfConversion = 4;
 	  ADC_Init(ADC1, &ADC_InitStructure);
 	  /* ADC3 regular channel12 configuration *************************************/
 	  ADC_RegularChannelConfig(ADC1, ADC_Channel_10, 1, ADC_SampleTime_112Cycles);
@@ -105,6 +105,7 @@ void DMA2_Stream0_IRQHandler(void)    //DMA中断滤波
 		sum=0;
 		}	
 	 }
+	 ADC_SoftwareStartConv(ADC1);   //如果不是外部触发则必须软件开始转换
 	 DMA_ClearITPendingBit(DMA2_Stream0,DMA_IT_TC);
 }
 

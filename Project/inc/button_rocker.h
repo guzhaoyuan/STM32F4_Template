@@ -11,7 +11,7 @@ typedef struct cmd     //核心结构体，抽象封装所有的指令
 	float x_target;  //自动指令
 	float y_target;  //自动指令
 	unsigned char mode; //0--Manually 1--Automatically
-	float speed;     //手动指令   max=100
+	float speed;     //手动指令   max=80
 	float angle;     //手动指令
 	unsigned char insert ;     //为简化控制，固定切深，仅保留切下(1)，抬起(0)二种状态
 	float DCSpeed;   //DCBL Speed

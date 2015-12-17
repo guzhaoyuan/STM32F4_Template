@@ -50,8 +50,8 @@ void Cutter_Move_Drill(unsigned char flag)       		//1----down 2-----up
 
 void Cutter_Init()						//回原点
 {
-	Stepper_Speed(stepper1 , 60);
-	Stepper_Speed(stepper2 , 60);
+	Stepper_Speed(stepper1 , -60);
+	Stepper_Speed(stepper2 , -60);
 	while(!(Cutter_Init_Flag>=2));
 }
 

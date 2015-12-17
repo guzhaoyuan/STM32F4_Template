@@ -38,7 +38,7 @@ void Motor_Init(void)								   //初始化所有电机
 
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0|GPIO_Pin_1|GPIO_Pin_2|GPIO_Pin_3;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
 	GPIO_Init(GPIOD, &GPIO_InitStructure);
 
 	GPIO_PinAFConfig(GPIOE, GPIO_PinSource9, GPIO_AF_TIM1);   //TIM1_CH1 DCBL
@@ -229,12 +229,12 @@ void Stepper_Speed(STEPPER stepperx , float speed)    //控制单个电机旋转
 			}
 			if(speed<0)
 			{
-				GPIO_ResetBits(GPIOA,GPIO_Pin_0);
+				GPIO_SetBits(GPIOA,GPIO_Pin_0);
 				speed=-speed;
 			}
 			else
 			{
-				GPIO_SetBits(GPIOA,GPIO_Pin_0);
+				GPIO_ResetBits(GPIOA,GPIO_Pin_0);
 			}
 			TIM2->ARR=(101-speed)*100;   
 			TIM2->CCR1=(TIM2->ARR)>>1; 

@@ -13,21 +13,24 @@ int main(){
 	Motor_Init();
 	Rocker_Init();
 	Input_Init();
-	//Cutter_Init();   //回零点
+	Cutter_Init();   //回零点
 	while (1)
 	{   
-		Stepper_Speed(stepper2 , 60);
-		Stepper_Speed(stepper1 , -60);
-		Delay(0xFFFFFF);
-		Stepper_Speed(stepper2 , 60);
-		Stepper_Speed(stepper1 , 60);
-		Delay(0xFFFFFF);
-		Stepper_Speed(stepper2 , -60);
-		Stepper_Speed(stepper1 , 60);
-		Delay(0xFFFFFF);
-		Stepper_Speed(stepper2 , -60);
-		Stepper_Speed(stepper1 , -60);
-		Delay(0xFFFFFF);
+
+
+		
+		// Stepper_Speed(stepper2 , 60);
+		// Stepper_Speed(stepper1 , -60);
+		// Delay(0xFFFFFF);
+		// Stepper_Speed(stepper2 , 60);
+		// Stepper_Speed(stepper1 , 60);
+		// Delay(0xFFFFFF);
+		// Stepper_Speed(stepper2 , -60);
+		// Stepper_Speed(stepper1 , 60);
+		// Delay(0xFFFFFF);
+		// Stepper_Speed(stepper2 , -60);
+		// Stepper_Speed(stepper1 , -60);
+		// Delay(0xFFFFFF);
   		//DCMotor_Speed(50);
   		//Stepper_Speed(stepper1 , -50);
   		//Stepper_Speed(stepper2 , 50);
