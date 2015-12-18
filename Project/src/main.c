@@ -10,7 +10,7 @@ NODE *selflocation;
 SIZE *size;
 
 int main(){
-	cmd = malloc(sizeof(CMD)); 
+	cmd = (CMD*)malloc(sizeof(CMD)); 
 	selflocation = malloc(sizeof(NODE)); 
 	size = malloc(sizeof(SIZE));
 	USART1_Config();
@@ -19,13 +19,13 @@ int main(){
 	Rocker_Init();
 	Input_Init();
 	Cutter_Init();   //回零点
-	cmd->x_target=1;
-	cmd->y_target=1;
-	cmd->x_current=0;
-	cmd->y_current=0;
-	cmd->mode = 1;
-	cmd->speed = 60;
-	cmd->angle = 0;
+	// cmd->x_target=1;
+	// cmd->y_target=1;
+	// cmd->x_current=0;
+	// cmd->y_current=0;
+	// cmd->mode = 0;
+	// cmd->speed = 60;
+	// cmd->angle = 1;
 	while (1)
 	{  
 		

@@ -168,7 +168,7 @@ void Rocker_Cmd(CMD *cmd) //读取指令存入指令空间  TODO:滤波
 
 void Exec_Cmd(CMD *cmd)    //执行命令，底层调用cuttermove的函数
 {
-	Cutter_Move_Drill(cmd->insert);
+	//Cutter_Move_Drill(cmd->insert);
 	if(cmd->mode==0){
 		Cutter_Move_Manually(cmd->speed,cmd->angle,cmd->DCSpeed);
 	}else{

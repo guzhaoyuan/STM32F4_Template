@@ -30,7 +30,7 @@ void Cutter_Move_Manually(float speed , float angle , float DCSpeed)   //传入�
 	
 	DCMotor_Speed(DCSpeed);
 	Stepper_Speed(stepper1 , speed);
-	Stepper_Speed(stepper2 , speed*cos(angle));   
+	//Stepper_Speed(stepper2 , speed*cos(angle));   
 }
 
 void Cutter_Move_Automatically(CMD *cmd)   //传入速度角度和大小控制运动
@@ -43,7 +43,7 @@ void Cutter_Move_Automatically(CMD *cmd)   //传入速度角度和大小控制�
 	float distance = sqrt(deltaX*deltaX + deltaY*deltaY);
 	float delayTime = distance/60*0xFFFFFF;
 	Delay(delayTime);
-	cutterStop();
+	//cutterStop();
 }
 
 void Cutter_Move_Drill(unsigned char flag)       		//1----down 2-----up
