@@ -91,7 +91,7 @@ void Rocker_Init(void){  //摇杆初始化
 void DMA2_Stream0_IRQHandler(void)    //DMA中断滤波
 {
  	 if(DMA_GetITStatus(DMA2_Stream0,DMA_IT_TC) != RESET) 
-   	 {  
+   {  
 		ADC_EOCOnEachRegularChannelCmd(ADC1, DISABLE);			
 		uint32_t sum= 0; 
 		int count,i; 
@@ -103,7 +103,7 @@ void DMA2_Stream0_IRQHandler(void)    //DMA中断滤波
 			}
 		ADC_value_filter[i]=sum>>5; 
 		sum=0;
-		}	
+		}
 	 }
 	 ADC_SoftwareStartConv(ADC1);   //如果不是外部触发则必须软件开始转换
 	 DMA_ClearITPendingBit(DMA2_Stream0,DMA_IT_TC);
@@ -146,6 +146,7 @@ void Rocker_Cmd(CMD *cmd) //读取指令存入指令空间  TODO:滤波
 				cmd->angle=3*PI/2;
 			else
 				cmd->angle=0;
+			Exec_Cmd(cmd);
 		}
 	}
 	//TODO:sizeinput的Rocker部分

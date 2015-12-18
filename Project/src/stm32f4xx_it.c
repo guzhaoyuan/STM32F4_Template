@@ -30,8 +30,12 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_it.h"
-// #include "hardware.h"
-// #include "thinpad.h"
+#include "button_rocker.h"
+#include "sizeInput.h"
+
+extern uint16_t ADC_value_filter[4];
+extern CMD *cmd;
+extern SIZE *size;
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -122,6 +126,14 @@ void DebugMon_Handler(void)
 void SysTick_Handler(void)
 {
   /* Update the LocalTime by adding SYSTEMTICK_PERIOD_MS each SysTick interrupt */
+  if(ADC_value_filter[0]>50 && ADC_value_filter[1]>50){
+    stop_Auto_Cmd();
+    Rocker_Cmd(cmd);
+  }else if( (!(size->x) || !(size->y) || !(size->z)) && !size->isParsed ){
+    size->isParsed = 1;
+    Auto_Cmd(cmd,size);
+  }
+
 }
 
 /**

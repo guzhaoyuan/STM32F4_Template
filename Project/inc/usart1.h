@@ -12,9 +12,9 @@
 #ifndef __USART1_H
 #define	__USART1_H
 
-#include "All_Include.h"
 #include <stdio.h>
-
+#include "stm32f4xx_usart.h"
+//#include "stm32f4xx_nvic.h"
 
 #define USART1_DR_Base  0x40013804
 #define SENDBUFF_SIZE 5000
