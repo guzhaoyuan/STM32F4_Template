@@ -2,7 +2,7 @@
 * @Author: jeasinema
 * @Date:   2015-12-06 22:25:48
 * @Last Modified by:   JeasineMa
-* @Last Modified time: 2015-12-19 03:02:31
+* @Last Modified time: 2015-12-20 00:24:56
 */
 
 #include "button_rocker.h"
@@ -93,11 +93,11 @@ void Rocker_Init(void)  //摇杆初始化
 
 	  //校准中间值
 	  Delay(0xFFFFF);
-	  for (uint8_t i=0;i<4;++i)
+	  for (uint8_t i=0;i<2;++i)
 	  {
 		  ADC_middle+=ADC_value_filter[i];
 	  }
-	  ADC_middle=ADC_middle>>2;    //取中间值
+	  ADC_middle=ADC_middle>>1;    //取中间值
 }
 
 void DMA2_Stream0_IRQHandler(void)    //DMA中断滤波
@@ -117,7 +117,7 @@ void DMA2_Stream0_IRQHandler(void)    //DMA中断滤波
 			{
 				sum += ADC_value[count][i]; 
 			}
-			ADC_value_filter[i]=sum>>5; 
+			ADC_value_filter[i]=sum>>5-ADC_middle; 
 			// printf("ADC%d=%d\r\n",i+1,ADC_value_filter[i]);
 			sum=0;
 		}	
