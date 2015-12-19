@@ -1,46 +1,60 @@
-
 /* 
 * @Author: jeasinema
 * @Date:   2015-12-06 22:25:48
-* @Last Modified by:   jeasinema
-* @Last Modified time: 2015-12-12 12:58:46
+* @Last Modified by:   JeasineMa
+* @Last Modified time: 2015-12-19 03:02:31
 */
 
 #include "button_rocker.h"
 #include "math.h"
 
-
 /*
 PC0---ADC1_IN10-DMA2S0C0
 PC1---ADC1_IN11-DMA2S0C0
-PC2---ADC1_IN12-DMA2S0C0
+PC2---ADC1_IN12-DMA2S0C0  
 PC3---ADC1_IN13-DMA2S0C0
 PC4---Button1
 PC5---Button2
 */
 
-void Rocker_Init(void){  //摇杆初始化
+void Rocker_Init(void)  //摇杆初始化
+{
 
-    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE); 
-    GPIO_InitTypeDef GPIO_InitStructure;
+      RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE); 
+      GPIO_InitTypeDef GPIO_InitStructure;
 	  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0|GPIO_Pin_1|GPIO_Pin_2|GPIO_Pin_3;
 	  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
-	  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
+	  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
 	  GPIO_Init(GPIOC, &GPIO_InitStructure);
 	  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4|GPIO_Pin_5;
 	  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
 	  GPIO_Init(GPIOC, &GPIO_InitStructure);
 
 	  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2 | RCC_AHB1Periph_GPIOC, ENABLE);
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
+      RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
 
 	  ADC_InitTypeDef ADC_InitStructure;
 	  DMA_InitTypeDef DMA_InitStructure;
 	  ADC_CommonInitTypeDef ADC_CommonInitStructure;
-	  EXTI_InitTypeDef EXTI_InitStructure;
-	  NVIC_InitTypeDef NVIC_InitStructure;
-
- 
+  	  /* DMA2 Stream0 channel0 configuration **************************************/
+  	  DMA_InitStructure.DMA_Channel = DMA_Channel_0;  
+	  DMA_InitStructure.DMA_PeripheralBaseAddr = &(ADC1->DR);
+	  DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)&ADC_value;
+	  DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;
+	  DMA_InitStructure.DMA_BufferSize = 128;    //4*32
+	  DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+	  DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;   
+	  DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;  //DR is a half-word register
+	  DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
+	  DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;
+	  DMA_InitStructure.DMA_Priority = DMA_Priority_High;
+	  DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable;         
+	  DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_HalfFull;
+	  DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;
+	  DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
+	  DMA_Init(DMA2_Stream0, &DMA_InitStructure);
+	  DMA_Cmd(DMA2_Stream0, ENABLE);
+	  DMA_ITConfig(DMA2_Stream0, DMA_IT_TC, ENABLE);
 
 	  /* ADC Common Init **********************************************************/
 	  ADC_CommonInitStructure.ADC_Mode = ADC_Mode_Independent;
@@ -54,10 +68,10 @@ void Rocker_Init(void){  //摇杆初始化
 	  ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
 	  ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;
 	  ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
-	  ADC_InitStructure.ADC_NbrOfConversion = 4;
+	  ADC_InitStructure.ADC_NbrOfConversion = 4;    //设置共有4个通道需转换
 	  ADC_Init(ADC1, &ADC_InitStructure);
 	  /* ADC3 regular channel12 configuration *************************************/
-	  ADC_RegularChannelConfig(ADC1, ADC_Channel_10, 1, ADC_SampleTime_112Cycles);
+	  ADC_RegularChannelConfig(ADC1, ADC_Channel_10, 1, ADC_SampleTime_112Cycles);    //112指的是转换周期（积分周期）
 	  ADC_RegularChannelConfig(ADC1, ADC_Channel_11, 2, ADC_SampleTime_112Cycles);
 	  ADC_RegularChannelConfig(ADC1, ADC_Channel_12, 3, ADC_SampleTime_112Cycles);
 	  ADC_RegularChannelConfig(ADC1, ADC_Channel_13, 4, ADC_SampleTime_112Cycles);
@@ -70,6 +84,7 @@ void Rocker_Init(void){  //摇杆初始化
 		/* Start ADC3 Software Conversion */ 
 	  ADC_SoftwareStartConv(ADC1);   //如果不是外部触发则必须软件开始转换
 
+	  NVIC_InitTypeDef NVIC_InitStructure;
 	  NVIC_InitStructure.NVIC_IRQChannel = DMA2_Stream0_IRQn; 
 	  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1; 
 	  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1; 
@@ -77,36 +92,38 @@ void Rocker_Init(void){  //摇杆初始化
 	  NVIC_Init(&NVIC_InitStructure); 
 
 	  //校准中间值
-	  Delay(0xFFFF);
-	  uint8_t i;
-	  for (i=0;i<4;++i)
+	  Delay(0xFFFFF);
+	  for (uint8_t i=0;i<4;++i)
 	  {
 		  ADC_middle+=ADC_value_filter[i];
 	  }
-	   ADC_middle>>=2;    //取中间值
+	  ADC_middle=ADC_middle>>2;    //取中间值
 }
-
-
 
 void DMA2_Stream0_IRQHandler(void)    //DMA中断滤波
 {
- 	 if(DMA_GetITStatus(DMA2_Stream0,DMA_IT_TC) != RESET) 
-   {  
-		ADC_EOCOnEachRegularChannelCmd(ADC1, DISABLE);			
-		uint32_t sum= 0; 
-		int count,i; 
+	//printf("ADC1=%d\r\n",ADC_value_filter[0]);
+	//printf("ADC2=%d\r\n",ADC_value_filter[1]);
+	//printf("ADC3=%d\r\n",ADC_value_filter[2]);
+	//printf("ADC4=%d\r\n",ADC_value_filter[3]);
+	//printf("ADC=%d\r\n",ADC_middle);
+ 	 if(DMA_GetITStatus(DMA2_Stream0,DMA_IT_TCIF0) != RESET)   //注意这里的flag不是DMA_IT_TC
+   	 {  
+		ADC_EOCOnEachRegularChannelCmd(ADC1, DISABLE);		
+		uint32_t sum= 0; int count,i; 
 		for(i=0;i<4;i++) 
 		{
 			for (count=0;count<32;count++) 
 			{
 				sum += ADC_value[count][i]; 
 			}
-		ADC_value_filter[i]=sum>>5; 
-		sum=0;
-		}
+			ADC_value_filter[i]=sum>>5; 
+			// printf("ADC%d=%d\r\n",i+1,ADC_value_filter[i]);
+			sum=0;
+		}	
 	 }
-	 ADC_SoftwareStartConv(ADC1);   //如果不是外部触发则必须软件开始转换
-	 DMA_ClearITPendingBit(DMA2_Stream0,DMA_IT_TC);
+	 ADC_EOCOnEachRegularChannelCmd(ADC1, ENABLE);
+	 DMA_ClearITPendingBit(DMA2_Stream0,DMA_IT_TCIF0);
 }
 
 int ABS(int x)

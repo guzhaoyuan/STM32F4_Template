@@ -35,7 +35,7 @@ void USART1_Config(void)
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 	GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_USART1);   
-  GPIO_PinAFConfig(GPIOB, GPIO_PinSource7, GPIO_AF_USART1);
+  	GPIO_PinAFConfig(GPIOB, GPIO_PinSource7, GPIO_AF_USART1);
 	
 	/* USART1 mode config */
 	USART_InitStructure.USART_BaudRate = 115200;
@@ -107,83 +107,83 @@ int fputc(int ch, FILE *f)
 }
 
 
-// static char *itoa(int value, char *string, int radix)
-// {
-// 	int     i, d;
-// 	int     flag = 0;
-// 	char    *ptr = string;
+static char *itoa(int value, char *string, int radix)
+{
+	int     i, d;
+	int     flag = 0;
+	char    *ptr = string;
 	
-// 	/* This implementation only works for decimal numbers. */
-// 	if (radix != 10)
-// 	{
-// 	    *ptr = 0;
-// 	    return string;
-// 	}
+	/* This implementation only works for decimal numbers. */
+	if (radix != 10)
+	{
+	    *ptr = 0;
+	    return string;
+	}
 	
-// 	if (!value)
-// 	{
-// 	    *ptr++ = 0x30;
-// 	    *ptr = 0;
-// 	    return string;
-// 	}
+	if (!value)
+	{
+	    *ptr++ = 0x30;
+	    *ptr = 0;
+	    return string;
+	}
 	
-// 	/* if this is a negative value insert the minus sign. */
-// 	if (value < 0)
-// 	{
-// 	    *ptr++ = '-';
+	/* if this is a negative value insert the minus sign. */
+	if (value < 0)
+	{
+	    *ptr++ = '-';
 	
-// 	    /* Make the value positive. */
-// 	    value *= -1;
-// 	}
+	    /* Make the value positive. */
+	    value *= -1;
+	}
 	
-// 	for (i = 10000; i > 0; i /= 10)
-// 	{
-// 	    d = value / i;
+	for (i = 10000; i > 0; i /= 10)
+	{
+	    d = value / i;
 	
-// 	    if (d || flag)
-// 	    {
-// 	        *ptr++ = (char)(d + 0x30);
-// 	        value -= (d * i);
-// 	        flag = 1;
-// 	    }
-// 	}
+	    if (d || flag)
+	    {
+	        *ptr++ = (char)(d + 0x30);
+	        value -= (d * i);
+	        flag = 1;
+	    }
+	}
 	
-// 	/* Null terminate the string. */
-// 	*ptr = 0;
+	/* Null terminate the string. */
+	*ptr = 0;
 	
-// 	return string;
+	return string;
 
-// } /* NCL_Itoa */
+} /* NCL_Itoa */
 
 
-// /* Retargeting functions for gcc-arm-embedded */
+/* Retargeting functions for gcc-arm-embedded */
 
-// int _write (int fd, char *ptr, int len)
-// {
-//   /* Write "len" of char from "ptr" to file id "fd"
-//    * Return number of char written.
-//    * Need implementing with UART here. */
-//   int i;
-//   for (i = 0; i < len; ++i)
-//   {
-//     _ttywrch(ptr[i]);
-//   }
-//   return len;
-// }
+int _write (int fd, char *ptr, int len)
+{
+  /* Write "len" of char from "ptr" to file id "fd"
+   * Return number of char written.
+   * Need implementing with UART here. */
+  int i;
+  for (i = 0; i < len; ++i)
+  {
+    _ttywrch(ptr[i]);
+  }
+  return len;
+}
 
-// int _read (int fd, char *ptr, int len)
-// {
-//   /* Read "len" of char to "ptr" from file id "fd"
-//    * Return number of char read.
-//    * Need implementing with UART here. */
-//   return len;
-// }
+int _read (int fd, char *ptr, int len)
+{
+  /* Read "len" of char to "ptr" from file id "fd"
+   * Return number of char read.
+   * Need implementing with UART here. */
+  return len;
+}
 
-// void _ttywrch(int ch) {
-//   /* Write one char "ch" to the default console
-//    * Need implementing with UART here. */
-//   fputc(ch, NULL);
-// }
+void _ttywrch(int ch) {
+  /* Write one char "ch" to the default console
+   * Need implementing with UART here. */
+  fputc(ch, NULL);
+}
 
 
 
