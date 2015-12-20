@@ -5,13 +5,11 @@
 #include "usart1.h"
 /*
 TODO：
-调通摇杆  OK 直接读取ADC_value_filter[i]即可 存在两个问题：1.使用ADC1的IN10/11时其IN12/13会受到IN11的干扰，下拉至地亦无效
-			ADC_value_filter[i]的值大约在0-4096之间 中间值为2095
-			+1 板子的VCC断了。。。。
 数码管显示
 
 按键
 
+系统时钟   已通过寄存器访问知其主频为100MHz  (修改了system_stm32f4xx.c)
 
 */
 uint8_t Cutter_Init_Flag=0;  //判断是否回零点
@@ -20,14 +18,32 @@ CMD *cmd;
 NODE *selflocation;
 SIZE *size;
 
+
+uint8_t tmp;
+uint32_t pllv0;
+uint32_t pllp;
+
 int main(){
 	// cmd = (CMD*)malloc(sizeof(CMD)); 
 	// selflocation = malloc(sizeof(NODE)); 
 	// size = malloc(sizeof(SIZE));
+	//RCC_Config();
+	
+	RCC_HCLKConfig(RCC_HCLK_Div1);   //SysTick的时钟由AHB决定，现设为1分频（不分频）
+	Delay_Init(168);
+	//SysTick_Config(SystemCoreClock / 1000);
+
+	// tmp=RCC_GetSYSCLKSource();
+	//pllv0=((HSE_VALUE / (RCC->PLLCFGR & RCC_PLLCFGR_PLLM)) * ((RCC->PLLCFGR & RCC_PLLCFGR_PLLN) >> 6));
+	//pllp = (((RCC->PLLCFGR & RCC_PLLCFGR_PLLP) >>16) + 1 ) *2;
+	//RCC_ClocksTypeDef* RCC_Clocks;
+	//RCC_GetClocksFreq(RCC_Clocks);
 	USART1_Config();
+	//printf("----------------------------------\r\n");
 	// NVIC_Config();
-	// Motor_Init();
+	Motor_Init();
 	Rocker_Init();
+	//SysTick_Config();
 	// Input_Init();
 	// Cutter_Init();   //回零点
 	// cmd->x_target=1;
@@ -37,8 +53,20 @@ int main(){
 	// cmd->mode = 0;
 	// cmd->speed = 60;
 	// cmd->angle = 1;
+
+
 	while (1)
 	{  
+		
+		GPIO_SetBits(GPIOA,GPIO_Pin_0);
+		delay_ms(10);
+		//delay_us(u32 nus);
+		GPIO_ResetBits(GPIOA,GPIO_Pin_0);
+		delay_ms(10);
+	//printf("%d\r\n",pllv0);
+	//printf("%d\r\n",pllp);
+
+		//printf("%d\r\n",RCC_Clocks->SYSCLK_Frequency);
 		//printf("ADC=%d\r\n",ADC_value[0][0]);
 		// printf("ADC1=%d\r\n",ADC_value_filter[0]);
 		// printf("ADC2=%d\r\n",ADC_value_filter[1]);

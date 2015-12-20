@@ -33,7 +33,7 @@
 #include "button_rocker.h"
 #include "sizeInput.h"
 
-extern uint16_t ADC_value_filter[4];
+extern int ADC_value_filter[4];
 extern CMD *cmd;
 extern SIZE *size;
 

@@ -1,8 +1,8 @@
 /* 
 * @Author: jeasinema
 * @Date:   2015-12-06 22:24:59
-* @Last Modified by:   jeasinema
-* @Last Modified time: 2015-12-11 23:17:59
+* @Last Modified by:   JeasineMa
+* @Last Modified time: 2015-12-20 01:32:00
 */
 
 #include "cutterMove.h"
@@ -128,5 +128,56 @@ void EXTI3_IRQHandler(void)  //到达y最大
 	EXTI_ClearITPendingBit(EXTI_Line3);
 }
 
+
+void RCC_Config()
+{
+     uint32_t           PLL_M;      
+     uint32_t           PLL_N;
+     uint32_t           PLL_P;
+     uint32_t           PLL_Q;
+ 
+    /*配置前将所有RCC重置为初始值*/
+     RCC_DeInit();
+ 
+     /*这里选择 外部晶振（HSE）作为 时钟源，因此首先打开外部晶振*/
+     RCC_HSEConfig(RCC_HSE_ON);
+     /*等待外部晶振进入稳定状态*/
+     while(RCC_WaitForHSEStartUp() != SUCCESS );
+ 
+     /*
+     **我们要选择PLL时钟作为系统时钟，因此这里先要对PLL时钟进行配置
+     */
+ 
+     /*选择外部晶振作为PLL的时钟源*/
+    
+     /* 到这一步为止，已有 HSE_VALUE = 8 MHz.
+        PLL_VCO input clock = (HSE_VALUE or HSI_VALUE / PLL_M)，
+        根据文档，这个值被建议在 1~2MHz，因此我们令 PLL_M = 8，
+        即 PLL_VCO input clock = 1MHz */
+     PLL_M         =    8;  
+    
+     /* 到这一步为止，已有 PLL_VCO input clock = 1 MHz.
+        PLL_VCO output clock = (PLL_VCO input clock) * PLL_N,
+        这个值要用来计算系统时钟，我们 令 PLL_N = 336,
+        即 PLL_VCO output clock = 336 MHz.*/       
+     PLL_N        =    168;
+ 
+     /* 到这一步为止，已有 PLL_VCO output clock = 336 MHz.
+        System Clock = (PLL_VCO output clock)/PLL_P ,
+        因为我们要 SystemClock = 168 Mhz，因此令 PLL_P = 2.
+        */
+     PLL_P         =    1;
+ 
+     /*这个系数用来配置SD卡读写，USB等功能，暂时不用，根据文档，暂时先设为7*/
+     PLL_Q         =    7;
+    
+     /* 配置PLL并将其使能，获得 168Mhz 的 System Clock 时钟*/
+     RCC_PLLConfig(RCC_PLLSource_HSE, PLL_M, PLL_N, PLL_P, PLL_Q);
+     RCC_PLLCmd(ENABLE);
+ 
+     /*到了这一步，我们已经配置好了PLL时钟。下面我们配置Syetem Clock*/
+     /*选择PLL时钟作为系统时钟源*/
+     RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
+}
 
 

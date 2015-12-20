@@ -22,6 +22,10 @@ typedef struct move
 	float speed;
 }MOVE;
 
+
+void RCC_Config();
+
+
 void Cutter_Move_Manually(float speed , float angle , float DCSpeed);   //传入速度角度和大小控制运动
 void Cutter_Move_Drill(unsigned char flag);       		//1----down 2-----up
 void Cutter_Init(void);						//回原点

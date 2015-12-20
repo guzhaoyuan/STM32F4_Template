@@ -23,9 +23,9 @@ void Rocker_Init(void);  //摇杆初始化
 void Rocker_Cmd(CMD *cmd); //读取指令存入指令空间
 void Exec_Cmd(CMD *cmd);    //执行命令，底层调用cuttermove的函数
 
- uint16_t ADC_value[32][4];
- uint16_t ADC_value_filter[4];
- uint8_t filter_Flag;    //0---filt NO 1---filt OK
- uint16_t ADC_middle;       //摇杆的静态值
+uint16_t ADC_value[32][4];
+int  ADC_value_filter[4];
+uint8_t filter_Flag;    //0---filt NO 1---filt OK
+uint16_t ADC_middle;       //摇杆的静态值
 
 #endif 
