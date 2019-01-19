@@ -3,8 +3,20 @@
 ## A Clean STM32F4 Project
 nothing inside, compile no error.
 
-## A Template
-used to build any STM32 Projects.
+This is a template, used to build any STM32 Projects.
+
+Verified using keil uvision5 on Windows and arm-none-eabi-gcc on MacOS. With STM32F407VGT6 Discovery Board.
+
+## how to run
+
+For mac, in Project/TrueSTUDIO, run
+
+```
+make
+sudo make flash
+```
+
+For Windows, in Project/MDK, open template.uvproj
 
 ## TODO
 
