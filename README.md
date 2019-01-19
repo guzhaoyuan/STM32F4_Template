@@ -21,5 +21,5 @@ For Windows, in Project/MDK, open template.uvproj
 ## TODO
 
 - [x] 添加keil project file
-- [ ] 添加stm32F4的芯片资料和用户手册
-- [ ] 添加一些基础例程，跑通所有的例程
+- [x] 添加stm32F4的芯片资料和用户手册
+- [x] 添加一些基础例程，跑通例程
